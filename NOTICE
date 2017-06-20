@@ -1,0 +1,26 @@
+Apache Spark
+Copyright 2014 and onwards The Apache Software Foundation.
+
+
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+
+
+This product depends on 'Protocol Buffers', Google's data
+interchange format, which can be obtained at:
+
+  * LICENSE:
+    * license/LICENSE.protobuf.txt (New BSD License)
+  * HOMEPAGE:
+    * http://code.google.com/p/protobuf/
+
+
+
+This product depends on Scala that is licensed under the BSD 3-Clause License.
+
+  * HOMEPAGE:
+    * Scala License https://www.scala-lang.org/license.html
+    Copyright (c) 2002-2017 EPFL
+    Copyright (c) 2011-2017 Lightbend, Inc.

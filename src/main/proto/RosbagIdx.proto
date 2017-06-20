@@ -1,0 +1,6 @@
+syntax = "proto3";
+package de.valtech.foss.proto;
+
+message RosbagIdx {
+  repeated int64 array = 1 [packed=true];
+}
