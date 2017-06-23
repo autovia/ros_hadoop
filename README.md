@@ -81,7 +81,9 @@ The msg_map function (from src/main/python/functions.py) takes three arguments:
 from functools import partial
 
 # Take 3 messages from '/imu/data' topic using default str func
-rdd.flatMap(
+rdd = fin.flatMap(
     partial(msg_map, conn=conn_d['/imu/data'])
-).take(3)
+)
+
+rdd.take(3)
 ```
