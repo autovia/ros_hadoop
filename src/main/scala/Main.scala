@@ -54,7 +54,7 @@ ${RESET}By default will just print to stdin the idx array needed for configurati
     case "--offset" :: x :: rest => pargs += ("offset" -> Some(x.toInt)); process_cli(rest)
     case "-h" :: rest => help(); false
     case "--help" :: rest => help(); false
-    case _ => Console.err.printf(s"${RESET}${RED}Unknown argument " + args.head); false 
+    case _ => Console.err.printf(s"${RESET}${RED}Unknown argument " + args.head); false
   }
   process_cli(args.toList)
 
@@ -81,7 +81,7 @@ ${RESET}By default will just print to stdin the idx array needed for configurati
       val h = p.read_record().get
       if(pargs contains "version") {
         printf("%s\n%s\n\n", version, h)
-        return 
+        return
       }
       if(pargs contains "number"){
         buffer position pargs.getOrElse("offset",None).asInstanceOf[Option[Int]].getOrElse(0)
@@ -94,7 +94,6 @@ ${RESET}By default will just print to stdin the idx array needed for configurati
       val chunk_idx = p.read_chunk_infos(c)
       val fout = new FileOutputStream(pargs("file").asInstanceOf[String] + ".idx.bin")
       val builder = RosbagIdx.newBuilder
-      //builder.addAllArray(chunk_idx.toIterable[java.lang.Long]())
       for(i <- chunk_idx)
 	builder.addArray(i)
       builder.build().writeTo(fout)

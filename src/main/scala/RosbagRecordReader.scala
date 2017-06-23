@@ -15,6 +15,7 @@ limitations under the License.
 package de.valtech.foss
 
 import scala.collection.JavaConverters._
+
 import java.io.IOException
 import java.io.FileInputStream
 import java.lang.Math.toIntExact
@@ -26,10 +27,6 @@ import org.apache.hadoop.io._
 import org.apache.hadoop.io.compress.CompressionCodecFactory
 import org.apache.hadoop.mapreduce.{InputSplit, RecordReader, TaskAttemptContext}
 import org.apache.hadoop.mapreduce.lib.input.FileSplit
-
-import com.google.gson.Gson
-import com.google.gson.JsonObject
-import com.google.gson.JsonArray
 
 import de.valtech.foss.proto.RosbagIdxOuterClass.RosbagIdx
 
@@ -73,9 +70,6 @@ class RosbagBytesRecordReader extends RecordReader[LongWritable, BytesWritable] 
   override def initialize(inputSplit: InputSplit, context: TaskAttemptContext) {
     id = context.getTaskAttemptID()
     val rosChunkIdx = RosbagInputFormat.getRosChunkIdx(context)
-    //val gson = new Gson
-    //idx = gson.fromJson(new java.io.StringReader(rosChunkIdx),
-    //  classOf[Array[Long]])
     idx = RosbagIdx.parseFrom(new FileInputStream(rosChunkIdx)).getArrayList.asScala.toArray
 
     val fileSplit = inputSplit.asInstanceOf[FileSplit]
@@ -100,13 +94,13 @@ class RosbagBytesRecordReader extends RecordReader[LongWritable, BytesWritable] 
       recordKey = new LongWritable()
     if (recordValue == null)
       recordValue = new BytesWritable()
-    
+
     val nextPosition = idx.find(e=>e>currentPosition).getOrElse(splitEnd.longValue).asInstanceOf[Long]
     if(nextPosition == splitEnd)
       recordKey.set(idx.size)
     else
       recordKey.set(idx.indexOf(nextPosition))
-    
+
     if (currentPosition < splitEnd) {
       val buffSize = toIntExact(nextPosition - currentPosition)
       val b = Array.ofDim[Byte](buffSize)
@@ -134,7 +128,7 @@ class RosbagMapRecordReader extends RecordReader[LongWritable, MapWritable] {
   private var idx: Array[java.lang.Long] = Array[java.lang.Long]()
 
   private val queue = scala.collection.mutable.Queue[BagRecord]()
-  
+
   override def close() {
     if (fileInputStream != null) {
       fileInputStream.close()
@@ -163,9 +157,6 @@ class RosbagMapRecordReader extends RecordReader[LongWritable, MapWritable] {
   override def initialize(inputSplit: InputSplit, context: TaskAttemptContext) {
     id = context.getTaskAttemptID()
     val rosChunkIdx = RosbagInputFormat.getRosChunkIdx(context)
-    //val gson = new Gson
-    //idx = gson.fromJson(new java.io.StringReader(rosChunkIdx),
-    //  classOf[Array[Long]])
     idx = RosbagIdx.parseFrom(new FileInputStream(rosChunkIdx)).getArrayList.asScala.toArray
 
     val fileSplit = inputSplit.asInstanceOf[FileSplit]
@@ -241,9 +232,9 @@ class RosbagMapRecordReader extends RecordReader[LongWritable, MapWritable] {
       dequeue_record
       return true
     }
-    
+
     val nextPosition = idx.find(e=>e>currentPosition).getOrElse(splitEnd.longValue).asInstanceOf[Long]
-        
+
     if (currentPosition < splitEnd) {
       val buffSize = toIntExact(nextPosition - currentPosition)
       val b = Array.ofDim[Byte](buffSize)
