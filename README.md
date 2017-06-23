@@ -29,6 +29,18 @@ hdfs dfs -ls
 
 ## Process the ros bag file in Spark using the RosbagInputFormat
 
+Start your Spark (e.g. jupyter notebook)
+```bash
+PYSPARK_PYTHON=python2 \
+PYSPARK_DRIVER_PYTHON=jupyter \
+PYSPARK_DRIVER_PYTHON_OPTS=notebook \
+/opt/spark/bin/pyspark \
+           --num-executors 2 \
+           --driver-memory 5g \
+           --executor-memory 4g \
+           --jars=./lib/rosbaginputformat_2.11-0.9.0-SNAPSHOT.jar
+```
+
 **Note:** your HDFS address might differ.
 ```python
 fin = sc.newAPIHadoopFile(
