@@ -22,16 +22,9 @@ import org.apache.hadoop.io.{BytesWritable, LongWritable, MapWritable}
 import org.apache.hadoop.mapreduce.{InputSplit, JobContext, RecordReader, TaskAttemptContext}
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat
 
-//import scala.util.parsing.json._
-import com.google.gson.Gson
-import com.google.gson.JsonObject
-import com.google.gson.JsonArray
-
 object RosbagInputFormat {
   def getRosChunkIdx(context: JobContext): String = {
-    val fname = context.getConfiguration.get("RosbagInputFormat.chunkIdx")
-    //Source.fromFile(fname).getLines.mkString
-    fname
+    context.getConfiguration.get("RosbagInputFormat.chunkIdx")
   }
   def getBlockSize(context: JobContext): Long = {
     context.getConfiguration.get("dfs.blocksize").toLong

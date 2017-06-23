@@ -1,6 +1,6 @@
 # Copyright 2017 The Authors. All Rights Reserved.
 # See the AUTHORS file distributed with
-# this work for additional information regarding The Authors. 
+# this work for additional information regarding The Authors.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -12,9 +12,9 @@
 # limitations under the License.
 # ==============================================================================
 
-def msg_02_map(r, func=str, conn={}):
+def msg_map(r, func=str, conn={}):
     from collections import namedtuple
-    from rosbag.bag import _get_message_type    
+    from rosbag.bag import _get_message_type
     if r[1]['header']['op'] == 2 and r[1]['header']['conn'] == conn['header']['conn']:
         c = conn['data']
         c['datatype'] = str(c['type'])

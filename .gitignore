@@ -1,7 +1,6 @@
 .ipynb_checkpoints/
 metastore_db/
 target/
-project/
 derby.log
 *bag
 *bin
