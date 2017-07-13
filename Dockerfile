@@ -7,7 +7,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN pip2 install --upgrade pip && \
     pip3 install --upgrade pip && \
-    pip3 install --no-cache-dir --upgrade jupyter pandas tensorflow keras && \
+    pip3 install --no-cache-dir --upgrade jupyter && \
+    pip2 install --no-cache-dir --upgrade matplotlib pandas tensorflow keras && \
     python2 -m pip install ipykernel && \
     python2 -m ipykernel install && \
     python3 -m pip install ipykernel && \
