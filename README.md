@@ -1,8 +1,10 @@
-**RosbagInputFormat** is an open source **splitable** Hadoop InputFormat for the rosbag file format.
+# **RosbagInputFormat**
+RosbagInputFormat is an open source **splitable** Hadoop InputFormat for the Rosbag file format.
 
 # Usage from Spark (pyspark)
+Example data can be found for instance at https://github.com/udacity/self-driving-car/tree/master/datasets published under MIT License.
 
-## Check that the rosbag file version is V2.0
+## Check that the Rosbag file version is V2.0
 ```bash
 java -jar lib/rosbaginputformat_2.11-0.9.0-SNAPSHOT.jar --version -f HMB_1.bag
 ```
@@ -14,6 +16,7 @@ The index is a very very small configuration file containing a protobuf array th
 ```bash
 java -jar lib/rosbaginputformat_2.11-0.9.0-SNAPSHOT.jar -f HMB_1.bag
 ```
+This will generate a very small file named HMB_1.bag.idx.bin in the same folder.
 
 ## Copy the bag file in HDFS
 
@@ -64,6 +67,43 @@ conn_d = {str(k['header']['topic']):k for k in conn_a}
 # see topic names
 conn_d.keys()
 ```
+['/right_camera/camera_info',
+ '/fix',
+ '/center_camera/image_color/compressed',
+ '/ecef/',
+ '/vehicle/steering_report',
+ '/vehicle/brake_report',
+ '/pressure',
+ '/vehicle/gps/time',
+ '/vehicle/joint_states',
+ '/vehicle/suspension_report',
+ '/vehicle/sonar_cloud',
+ '/velodyne_packets',
+ '/vehicle/surround_report',
+ '/diagnostics',
+ '/vehicle/brake_info_report',
+ '/vehicle/imu/data_raw',
+ '/time_reference',
+ '/vehicle/gear_report',
+ '/vehicle/throttle_report',
+ '/vehicle/fuel_level_report',
+ '/vehicle/gps/vel',
+ '/imu/data',
+ '/center_camera/camera_info',
+ '/vehicle/filtered_accel',
+ '/vehicle/wheel_speed_report',
+ '/vehicle/twist_controller/parameter_descriptions',
+ '/left_camera/image_color/compressed',
+ '/can_bus_dbw/can_rx',
+ '/vehicle/twist_controller/parameter_updates',
+ '/vehicle/throttle_info_report',
+ '/right_camera/image_color/compressed',
+ '/vehicle/misc_1_report',
+ '/vehicle/gps/fix',
+ '/vehicle/tire_pressure_report',
+ '/left_camera/camera_info',
+ '/vehicle/dbw_enabled']
+
 
 ### Load the python map functions from src/main/python/functions.py
 ```python
@@ -85,5 +125,27 @@ rdd = fin.flatMap(
     partial(msg_map, conn=conn_d['/imu/data'])
 )
 
-rdd.take(3)
+print(rdd.take(1)[0])
 ```
+header:
+  seq: 1183922
+  stamp:
+    secs: 1479424214
+    nsecs: 778361082
+  frame_id: /imu
+orientation:
+  x: 0.0129953000777
+  y: 0.0285158107904
+  z: 0.919372532256
+  w: 0.392137603658
+orientation_covariance: [0.017453292519943295, 0.0, 0.0, 0.0, 0.017453292519943295, 0.0, 0.0, 0.0, 0.15707963267948966]
+angular_velocity:
+  x: 0.0
+  y: 0.0
+  z: 0.0
+angular_velocity_covariance: [-1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0]
+linear_acceleration:
+  x: 0.413850963116
+  y: 0.0246856212616
+  z: 8.58306980133
+linear_acceleration_covariance: [0.0004, 0.0, 0.0, 0.0, 0.0004, 0.0, 0.0, 0.0, 0.0004]
