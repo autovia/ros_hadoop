@@ -1,63 +1,65 @@
-**RosbagInputFormat** is an open source **splitable** Hadoop InputFormat for the rosbag file format.
+# **RosbagInputFormat**
+RosbagInputFormat is an open source **splittable** Hadoop InputFormat for the ROS bag file format.
 
-# Usage from Spark (pyspark)
+# Usage
 
-## Check that the rosbag file version is V2.0
+1. Download latest release jar file and put it in classpath
+2. Extract the index configuration of your ROS bag file e.g.
 ```bash
-java -jar lib/rosbaginputformat_2.11-0.9.0-SNAPSHOT.jar --version -f HMB_1.bag
+java -jar lib/rosbaginputformat_2.11-0.9.0.jar -f /srv/data/HMB_4.bag
+# will create an idx.bin config file /srv/data/HMB_4.bag.idx.bin
 ```
-
-## Extract the index as configuration
-The index is a very very small configuration file containing a protobuf array that will be given in the job configuration.
-
-**Note** that the operation **will not** process and it **will not** parse the whole bag file, but will simply seek to the required offset.
+3. Put the ROS bag file in HDFS e.g.
 ```bash
-java -jar lib/rosbaginputformat_2.11-0.9.0-SNAPSHOT.jar -f HMB_1.bag
+hdfs dfs -put
 ```
-
-## Copy the bag file in HDFS
-
-Using your favorite tool put the bag file in your working HDFS folder.
-
-**Note:** keep the index json file as configuration to your jobs, **do not** put small files in HDFS.
-
-Assuming your HDFS working folder is /user/spark/ (e.g. hdfs dfs -mkdir /user/spark/)
-```bash
-hdfs dfs -put data/HMB_1.bag
-hdfs dfs -ls
-```
-
-## Process the ros bag file in Spark using the RosbagInputFormat
-
-Start your Spark (e.g. jupyter notebook)
-```bash
-PYSPARK_PYTHON=python2 \
-PYSPARK_DRIVER_PYTHON=jupyter \
-PYSPARK_DRIVER_PYTHON_OPTS=notebook \
-/opt/spark/bin/pyspark \
-           --num-executors 2 \
-           --driver-memory 5g \
-           --executor-memory 4g \
-           --jars=./lib/rosbaginputformat_2.11-0.9.0-SNAPSHOT.jar
-```
-
-**Note:** your HDFS address might differ.
+4. Use it in your jobs e.g.
 ```python
-fin = sc.newAPIHadoopFile(
-    path =             "hdfs://127.0.0.1:9000/user/spark/HMB_1.bag",
+sc.newAPIHadoopFile(
+    path =             "hdfs://127.0.0.1:9000/user/spark/HMB_4.bag",
     inputFormatClass = "de.valtech.foss.RosbagMapInputFormat",
     keyClass =         "org.apache.hadoop.io.LongWritable",
     valueClass =       "org.apache.hadoop.io.MapWritable",
-    conf =             {"RosbagInputFormat.chunkIdx":"./HMB_1.bag.idx.bin"})
+    conf =             {"RosbagInputFormat.chunkIdx":"/srv/data/HMB_4.bag.idx.bin"})
 ```
 
-## Interpret the Messages
+**The extracted index is a very very small configuration** file containing a protobuf array that will be given in the job configuration. **Note that the operation will not process and it will not parse** the whole bag file, but will simply seek to the required offset.
+
+Example data can be found for instance at https://github.com/udacity/self-driving-car/tree/master/datasets published under MIT License.
+
+# Documentation
+The [doc/](doc/) folder contains a jupyter notebook with a few basic usage examples.
+
+<p align="center"><img src="doc/images/concept.png" height="350">
+</p>
+
+# Demo
+
+## To test locally use the Dockerfile
+
+To build an image using the Dockerfile run the following in the shell.
+Please note that it will download Hadoop and Spark from the URL source. The generated image is therefor relatively large ~5G.
+```bash
+docker build -t ros_hadoop:latest -f Dockerfile .
+```
+
+To start a container use the following shell command **in the ros_hadoop folder.**
+```bash
+# $(pwd) will point to the ros_hadoop git clone folder
+docker run -it -v $(pwd):/root/ros_hadoop -p 8888:8888 ros_hadoop
+```
+The container has a configured HDFS as well as Spark and the RosInputFormat jar.
+It leaves the user in a bash shell.
+
+Point your browser to the local [URL](http://localhost:8888/) and enjoy the tutorial. The access token is printed in the docker container console.
+
+### Interpret the Messages
+
 To interpret the messages we need the connections.
 
-We could get the connections as configuration as well. At the moment we decided to collect the connections into Spark driver in a dictionary and use it in the subsequent RDD actions. Note in the next version of the RosbagInputFormater alternative implementations will be given.
+We could get the connections as configuration as well. At the moment we decided to collect the connections into Spark driver in a dictionary and use it in the subsequent RDD actions. **Note** that in the next version of the RosbagInputFormater alternative implementations will be given.
 
-### Collect the connections from all Spark partitions of the bag file into the Spark driver
-
+Collect the connections from all Spark partitions of the bag file into the Spark driver.
 ```python
 conn_a = fin.filter(lambda r: r[1]['header']['op'] == 7).map(lambda r: r[1]).collect()
 conn_d = {str(k['header']['topic']):k for k in conn_a}
@@ -71,17 +73,23 @@ conn_d.keys()
 ```
 
 ### Use of msg_map to apply a function on all messages
-Python **rosbag.bag** needs to be installed on all Spark workers.
-The msg_map function (from src/main/python/functions.py) takes three arguments:
-1. r = the message or RDD record Tuple
-2. func = a function (default str) to apply to the ROS message
-3. conn = a connection to specify what topic to process
+
+Python rosbag.bag needs to be installed on all Spark workers. The msg_map function (from src/main/python/functions.py) takes three arguments:
+
+r = the message or RDD record Tuple
+func = a function (default str) to apply to the ROS message
+conn = a connection to specify what topic to process
 
 ```python
 from functools import partial
 
 # Take 3 messages from '/imu/data' topic using default str func
-rdd.flatMap(
+rdd = fin.flatMap(
     partial(msg_map, conn=conn_d['/imu/data'])
-).take(3)
+)
+
+rdd.take(3)
 ```
+
+## Please do not forget to send us your [feedback](AUTHORS).
+![doc/images/browse-tutorial.png](doc/images/browse-tutorial.png)
