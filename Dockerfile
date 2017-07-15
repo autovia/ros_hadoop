@@ -21,12 +21,12 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 ENV PATH $PATH:/opt/apache/hadoop/bin:/opt/apache/spark/bin
 ENV PYSPARK_DRIVER_PYTHON jupyter
 ENV PYSPARK_DRIVER_PYTHON_OPTS "notebook --allow-root --ip=0.0.0.0"
-ENV ROSIF_JAR /opt/ros_hadoop/ros_hadoop-0.9.0/lib/rosbaginputformat_2.11-0.9.0-SNAPSHOT.jar
+ENV ROSIF_JAR /opt/ros_hadoop/ros_hadoop-0.9.2/lib/rosbaginputformat_2.11-0.9.2.jar
 
 ADD http://www-eu.apache.org/dist/hadoop/common/hadoop-2.8.0/hadoop-2.8.0.tar.gz /opt/apache/
 ADD http://www-eu.apache.org/dist/spark/spark-2.2.0/spark-2.2.0-bin-hadoop2.7.tgz /opt/apache/
 ADD https://xfiles.valtech.io/f/c494d168522045e3bcc0/?dl=1 /srv/data/HMB_4.bag
-ADD https://github.com/vasco-da-gama/ros_hadoop/archive/0.9.0.tar.gz /opt/ros_hadoop/
+ADD https://github.com/valtech/ros_hadoop/archive/v0.9.2.tar.gz /opt/ros_hadoop/
 
 RUN ln -s /opt/apache/hadoop-2.8.0 /opt/apache/hadoop && \
     ln -s /opt/apache/spark-2.2.0-bin-hadoop2.7 /opt/apache/spark
@@ -45,9 +45,8 @@ RUN bash -c "/ros_hadoop.sh 2>/dev/null" && \
     /opt/apache/hadoop/sbin/hadoop-daemon.sh --script hdfs stop datanode && \
     /opt/apache/hadoop/sbin/hadoop-daemon.sh --script hdfs stop namenode
 
-WORKDIR /opt/ros_hadoop/ros_hadoop-0.9.0/doc/
+WORKDIR /opt/ros_hadoop/ros_hadoop-0.9.2/doc/
 ENTRYPOINT ["/ros_hadoop.sh"]
-CMD ["/opt/apache/spark/bin/pyspark","--num-executors","2","--driver-memory","5g","--executor-memory","8g","--jars=../lib/rosbaginputformat_2.11-0.9.0-SNAPSHOT.jar,../lib/protobuf-java-3.3.0.jar"]
+CMD ["/opt/apache/spark/bin/pyspark","--num-executors","2","--driver-memory","5g","--executor-memory","8g","--jars=../lib/rosbaginputformat_2.11-0.9.2.jar,../lib/protobuf-java-3.3.0.jar"]
 
-#CMD ["bash"]
-# PYSPARK_DRIVER_PYTHON=jupyter PYSPARK_DRIVER_PYTHON_OPTS="notebook --allow-root --ip=0.0.0.0" /opt/apache/spark/bin/pyspark --num-executors 2 --driver-memory 5g --executor-memory 8g --jars=../lib/rosbaginputformat_2.11-0.9.0-SNAPSHOT.jar,../lib/protobuf-java-3.3.0.jar
+# PYSPARK_DRIVER_PYTHON=jupyter PYSPARK_DRIVER_PYTHON_OPTS="notebook --allow-root --ip=0.0.0.0" /opt/apache/spark/bin/pyspark --num-executors 2 --driver-memory 5g --executor-memory 8g --jars=../lib/rosbaginputformat_2.11-0.9.2.jar,../lib/protobuf-java-3.3.0.jar
