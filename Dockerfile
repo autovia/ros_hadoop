@@ -21,18 +21,18 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 ENV PATH $PATH:/opt/apache/hadoop/bin:/opt/apache/spark/bin
 ENV PYSPARK_DRIVER_PYTHON jupyter
 ENV PYSPARK_DRIVER_PYTHON_OPTS "notebook --allow-root --ip=0.0.0.0"
-ENV ROSIF_JAR /opt/ros_hadoop/ros_hadoop-0.9.2/lib/rosbaginputformat_2.11-0.9.2.jar
+ENV ROSIF_JAR /opt/ros_hadoop/ros_hadoop-0.9.3/lib/rosbaginputformat_2.11-0.9.3.jar
 
-ADD http://www-eu.apache.org/dist/hadoop/common/hadoop-2.8.0/hadoop-2.8.0.tar.gz /opt/apache/
+ADD http://www-eu.apache.org/dist/hadoop/common/hadoop-2.8.1/hadoop-2.8.1.tar.gz /opt/apache/
 ADD http://www-eu.apache.org/dist/spark/spark-2.2.0/spark-2.2.0-bin-hadoop2.7.tgz /opt/apache/
-ADD https://github.com/valtech/ros_hadoop/archive/v0.9.2.tar.gz /opt/ros_hadoop/
 ADD https://xfiles.valtech.io/f/c494d168522045e3bcc0/?dl=1 /srv/data/HMB_4.bag
+ADD https://github.com/valtech/ros_hadoop/archive/v0.9.3.tar.gz /opt/ros_hadoop/
 
-RUN [ -d /opt/apache/hadoop-2.8.0 ] || tar xvfz /opt/apache/hadoop-2.8.0.tar.gz -C /opt/apache
+RUN [ -d /opt/apache/hadoop-2.8.1 ] || tar xvfz /opt/apache/hadoop-2.8.1.tar.gz -C /opt/apache
 RUN [ -d /opt/apache/spark-2.2.0-bin-hadoop2.7 ] || tar xvfz /opt/apache/spark-2.2.0-bin-hadoop2.7.tgz -C /opt/apache
 RUN [ -d /opt/ros_hadoop/ros_hadoop-0.9.2 ] || tar xvfz /opt/ros_hadoop/v0.9.2.tar.gz -C /opt/ros_hadoop
 
-RUN ln -s /opt/apache/hadoop-2.8.0 /opt/apache/hadoop && \
+RUN ln -s /opt/apache/hadoop-2.8.1 /opt/apache/hadoop && \
     ln -s /opt/apache/spark-2.2.0-bin-hadoop2.7 /opt/apache/spark
 
 RUN printf "<configuration>\n<property>\n<name>fs.defaultFS</name>\n<value>hdfs://localhost:9000</value>\n</property>\n</configuration>" > /opt/apache/hadoop/etc/hadoop/core-site.xml && \
@@ -49,8 +49,8 @@ RUN bash -c "/ros_hadoop.sh 2>/dev/null" && \
     /opt/apache/hadoop/sbin/hadoop-daemon.sh --script hdfs stop datanode && \
     /opt/apache/hadoop/sbin/hadoop-daemon.sh --script hdfs stop namenode
 
-WORKDIR /opt/ros_hadoop/ros_hadoop-0.9.2/doc/
+WORKDIR /opt/ros_hadoop/ros_hadoop-0.9.3/doc/
 ENTRYPOINT ["/ros_hadoop.sh"]
-CMD ["/opt/apache/spark/bin/pyspark","--num-executors","2","--driver-memory","5g","--executor-memory","8g","--jars=../lib/rosbaginputformat_2.11-0.9.2.jar,../lib/protobuf-java-3.3.0.jar"]
+CMD ["/opt/apache/spark/bin/pyspark","--num-executors","2","--driver-memory","5g","--executor-memory","8g","--jars=../lib/rosbaginputformat_2.11-0.9.3.jar,../lib/protobuf-java-3.3.0.jar"]
 
-# PYSPARK_DRIVER_PYTHON=jupyter PYSPARK_DRIVER_PYTHON_OPTS="notebook --allow-root --ip=0.0.0.0" /opt/apache/spark/bin/pyspark --num-executors 2 --driver-memory 5g --executor-memory 8g --jars=../lib/rosbaginputformat_2.11-0.9.2.jar,../lib/protobuf-java-3.3.0.jar
+# PYSPARK_DRIVER_PYTHON=jupyter PYSPARK_DRIVER_PYTHON_OPTS="notebook --allow-root --ip=0.0.0.0" /opt/apache/spark/bin/pyspark --num-executors 2 --driver-memory 5g --executor-memory 8g --jars=../lib/rosbaginputformat_2.11-0.9.3.jar,../lib/protobuf-java-3.3.0.jar
