@@ -30,7 +30,7 @@ ADD https://github.com/valtech/ros_hadoop/archive/v0.9.3.tar.gz /opt/ros_hadoop/
 
 RUN [ -d /opt/apache/hadoop-2.8.1 ] || tar xvfz /opt/apache/hadoop-2.8.1.tar.gz -C /opt/apache
 RUN [ -d /opt/apache/spark-2.2.0-bin-hadoop2.7 ] || tar xvfz /opt/apache/spark-2.2.0-bin-hadoop2.7.tgz -C /opt/apache
-RUN [ -d /opt/ros_hadoop/ros_hadoop-0.9.2 ] || tar xvfz /opt/ros_hadoop/v0.9.2.tar.gz -C /opt/ros_hadoop
+RUN [ -d /opt/ros_hadoop/ros_hadoop-0.9.3 ] || tar xvfz /opt/ros_hadoop/v0.9.3.tar.gz -C /opt/ros_hadoop
 
 RUN ln -s /opt/apache/hadoop-2.8.1 /opt/apache/hadoop && \
     ln -s /opt/apache/spark-2.2.0-bin-hadoop2.7 /opt/apache/spark
