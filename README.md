@@ -36,7 +36,7 @@ The [doc/](doc/) folder contains a jupyter notebook with a few basic usage examp
 ## To test locally use the Dockerfile
 
 To build an image using the Dockerfile run the following in the shell.
-Please note that it will download Hadoop and Spark from the URL source. The generated image is therefor relatively large ~5G.
+Please note that it will download Hadoop and Spark from the URL source. The generated image is therefore relatively large ~5G.
 ```bash
 docker build -t ros_hadoop:latest -f Dockerfile .
 ```
@@ -167,7 +167,7 @@ header:
   stamp:
     secs: 1479425728
     nsecs: 747487068
-  frame_id: /imu
+  frame_id: /imu/
 orientation:
   x: -0.0251433756238
   y: 0.0284643176884
