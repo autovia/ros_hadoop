@@ -167,7 +167,7 @@ header:
   stamp:
     secs: 1479425728
     nsecs: 747487068
-  frame_id: /imu/
+  frame_id: /imu
 orientation:
   x: -0.0251433756238
   y: 0.0284643176884
