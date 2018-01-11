@@ -53,7 +53,7 @@ Point your browser to the local [URL](http://localhost:8888/) and enjoy the tuto
 
 ### Usage from Spark (pyspark)
 
-Example data can be found for instance at https://github.com/udacity/self-driving-car/tree/master/datasets published under MIT License.
+Example data can be found for instance at https://github.com/udacity/self-driving-car/tree/master/datasets published under MIT License.
 
 Check that the rosbag file version is V2.0
 
