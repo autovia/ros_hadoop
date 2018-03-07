@@ -5,7 +5,7 @@ lazy val root = (project in file(".")).
     inThisBuild(List(
       organization := "org.apache.spark.input",
       scalaVersion := "2.11.8",
-      version      := "0.9.2"
+      version      := "0.9.5"
     )),
     name := "RosbagInputFormat",
     libraryDependencies ++= Seq( 

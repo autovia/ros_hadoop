@@ -1,26 +1,28 @@
 # **RosbagInputFormat**
 RosbagInputFormat is an open source **splittable** Hadoop InputFormat for the ROS bag file format.
 
+The complete source code is available in src/ folder and the jar file is generated using SBT (see build.sbt)
+
 # Usage
 
 1. Download latest release jar file and put it in classpath
 2. Extract the index configuration of your ROS bag file. **The extracted index is a very very small configuration** file containing a protobuf array that will be given in the job configuration. **Note that the operation will not process and it will not parse** the whole bag file, but will simply seek to the required offset. e.g.
 ```bash
-java -jar lib/rosbaginputformat_2.11-0.9.3.jar -f /srv/data/HMB_4.bag
-# will create an idx.bin config file /srv/data/HMB_4.bag.idx.bin
+java -jar lib/rosbaginputformat.jar -f /opt/ros_hadoop/master/dist/HMB_4.bag
+# will create an idx.bin config file /opt/ros_hadoop/master/dist/HMB_4.bag.idx.bin
 ```
 3. Put the ROS bag file in HDFS e.g.
 ```bash
 hdfs dfs -put
 ```
-4. Use it in your jobs e.g.
+4. Use it in your Spark jobs e.g.
 ```python
 sc.newAPIHadoopFile(
     path =             "hdfs://127.0.0.1:9000/user/spark/HMB_4.bag",
     inputFormatClass = "de.valtech.foss.RosbagMapInputFormat",
     keyClass =         "org.apache.hadoop.io.LongWritable",
     valueClass =       "org.apache.hadoop.io.MapWritable",
-    conf =             {"RosbagInputFormat.chunkIdx":"/srv/data/HMB_4.bag.idx.bin"})
+    conf = {"RosbagInputFormat.chunkIdx":"/opt/ros_hadoop/master/dist/HMB_4.bag.idx.bin"})
 ```
 
 Example data can be found for instance at https://github.com/udacity/self-driving-car/tree/master/datasets published under MIT License.
@@ -55,10 +57,10 @@ Point your browser to the local [URL](http://localhost:8888/) and enjoy the tuto
 
 Example data can be found for instance at https://github.com/udacity/self-driving-car/tree/master/datasets published under MIT License.
 
-Check that the rosbag file version is V2.0
+Check that the Rosbag file version is V2.0
 
 ```bash
-java -jar lib/rosbaginputformat_2.11-0.9.3.jar --version -f HMB_1.bag
+java -jar lib/rosbaginputformat.jar --version -f HMB_1.bag
 ```
 
 ### Extract the index as configuration
@@ -68,8 +70,8 @@ Note that the operation will not process and it will not parse the whole ba
 
 ```bash
 # assuming you start the notebook in the doc/ folder
-java -jar ../lib/rosbaginputformat_2.11-0.9.0-SNAPSHOT.jar \
-     -f /srv/data/HMB_4.bag
+java -jar ../lib/rosbaginputformat.jar \
+     -f /opt/ros_hadoop/master/dist/HMB_4.bag
 
 hdfs dfs -ls
 ```
@@ -81,10 +83,10 @@ This will generate a very small file named HMB_1.bag.idx.bin in the same folder.
 Using your favorite tool put the bag file in your working HDFS folder.
 
 ***Note***: keep the index file as configuration to your jobs, ***do not*** put small files in HDFS.
-For convenience we already provide an example file (/srv/data/HMB_4.bag) in the HDFS under /user/root/
+For convenience we already provide an example file (/opt/ros_hadoop/master/dist/HMB_4.bag) in the HDFS under /user/root/
 
 ```bash
-hdfs dfs -put /srv/data/HMB_4.bag
+hdfs dfs -put /opt/ros_hadoop/master/dist/HMB_4.bag
 hdfs dfs -ls
 ```
 <p align="center"><img src="doc/images/rosbag-analytics.png">
@@ -103,7 +105,7 @@ fin = sc.newAPIHadoopFile(
     inputFormatClass = "de.valtech.foss.RosbagMapInputFormat",
     keyClass =         "org.apache.hadoop.io.LongWritable",
     valueClass =       "org.apache.hadoop.io.MapWritable",
-    conf =             {“RosbagInputFormat.chunkIdx”:”/srv/data/HMB_4.bag.idx.bin"})
+    conf = {“RosbagInputFormat.chunkIdx”:”/opt/ros_hadoop/master/dist/HMB_4.bag.idx.bin"})
 ```
 
 ### Interpret the Messages

@@ -1,18 +1,28 @@
 FROM ros
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    locales bzip2 python-pip python3-pip python-setuptools python3-setuptools unzip xz-utils \
+    locales bzip2 tree unzip xz-utils curl wget iproute2 \
+    python-pip python3-pip python-setuptools python3-setuptools \
     openjdk-8-jdk-headless \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip2 install --upgrade pip && \
-    pip3 install --upgrade pip && \
+RUN python2 -m pip install --upgrade --user pip && \
+    python3 -m pip install --upgrade --user pip && \
     pip3 install --no-cache-dir --upgrade jupyter && \
     pip2 install --no-cache-dir --upgrade matplotlib pandas tensorflow keras Pillow && \
     python2 -m pip install ipykernel && \
     python2 -m ipykernel install && \
     python3 -m pip install ipykernel && \
     python3 -m ipykernel install
+
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 66F84AE1EB71A8AC108087DCAF677210FF6D3CDA && \
+    bash -c 'echo "deb [ arch=amd64 ] http://packages.dataspeedinc.com/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-dataspeed-public.list' && \
+    apt-get update
+
+RUN bash -c 'echo "yaml http://packages.dataspeedinc.com/ros/ros-public-'$ROS_DISTRO'.yaml '$ROS_DISTRO'" > /etc/ros/rosdep/sources.list.d/30-dataspeed-public-'$ROS_DISTRO'.list' && \
+    rosdep update 2>/dev/null && apt-get install -y --no-install-recommends \
+      ros-$ROS_DISTRO-dbw-mkz ros-$ROS_DISTRO-mobility-base ros-$ROS_DISTRO-baxter-sdk ros-$ROS_DISTRO-velodyne && \
+    rm -rf /var/lib/apt/lists/*
 
 # Default to UTF-8
 RUN locale-gen en_US.UTF-8
@@ -21,36 +31,45 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 ENV PATH $PATH:/opt/apache/hadoop/bin:/opt/apache/spark/bin
 ENV PYSPARK_DRIVER_PYTHON jupyter
 ENV PYSPARK_DRIVER_PYTHON_OPTS "notebook --allow-root --ip=0.0.0.0"
-ENV ROSIF_JAR /opt/ros_hadoop/ros_hadoop-0.9.3/lib/rosbaginputformat_2.11-0.9.3.jar
+ENV ROSIF_JAR /opt/ros_hadoop/master/lib/rosbaginputformat.jar
 
-ADD http://www-eu.apache.org/dist/hadoop/common/hadoop-2.8.1/hadoop-2.8.1.tar.gz /opt/apache/
-ADD http://www-eu.apache.org/dist/spark/spark-2.2.0/spark-2.2.0-bin-hadoop2.7.tgz /opt/apache/
-ADD https://xfiles.valtech.io/f/c494d168522045e3bcc0/?dl=1 /srv/data/HMB_4.bag
-ADD https://github.com/valtech/ros_hadoop/archive/v0.9.3.tar.gz /opt/ros_hadoop/
+RUN mkdir -p /opt/ros_hadoop/latest
+RUN mkdir -p /opt/ros_hadoop/master/dist/
+RUN mkdir -p /opt/apache/
+ADD . /opt/ros_hadoop/master
+RUN bash -c "curl -s https://api.github.com/repos/valtech/ros_hadoop/releases/latest | egrep -io 'https://api.github.com/repos/valtech/ros_hadoop/tarball/[^\"]*' | xargs wget --quiet -O /opt/ros_hadoop/latest.tgz"
+RUN bash -c "if [ ! -f /opt/ros_hadoop/master/dist/hadoop-3.0.0.tar.gz ] ; then wget --quiet -O /opt/ros_hadoop/master/dist/hadoop-3.0.0.tar.gz http://www-eu.apache.org/dist/hadoop/common/hadoop-3.0.0/hadoop-3.0.0.tar.gz ; fi"
+RUN bash -c "if [ ! -f /opt/ros_hadoop/master/dist/spark-2.2.1-bin-hadoop2.7.tgz ] ; then wget --quiet -O /opt/ros_hadoop/master/dist/spark-2.2.1-bin-hadoop2.7.tgz http://www-eu.apache.org/dist/spark/spark-2.2.1/spark-2.2.1-bin-hadoop2.7.tgz ; fi"
+RUN tar -xzf /opt/ros_hadoop/latest.tgz -C /opt/ros_hadoop/latest --strip-components=1 && rm /opt/ros_hadoop/latest.tgz
+RUN tar -xzf /opt/ros_hadoop/master/dist/hadoop-3.0.0.tar.gz -C /opt/apache && rm /opt/ros_hadoop/master/dist/hadoop-3.0.0.tar.gz
+RUN tar -xzf /opt/ros_hadoop/master/dist/spark-2.2.1-bin-hadoop2.7.tgz -C /opt/apache && rm /opt/ros_hadoop/master/dist/spark-2.2.1-bin-hadoop2.7.tgz
 
-RUN [ -d /opt/apache/hadoop-2.8.1 ] || tar xvfz /opt/apache/hadoop-2.8.1.tar.gz -C /opt/apache
-RUN [ -d /opt/apache/spark-2.2.0-bin-hadoop2.7 ] || tar xvfz /opt/apache/spark-2.2.0-bin-hadoop2.7.tgz -C /opt/apache
-RUN [ -d /opt/ros_hadoop/ros_hadoop-0.9.3 ] || tar xvfz /opt/ros_hadoop/v0.9.3.tar.gz -C /opt/ros_hadoop
+RUN ln -s /opt/apache/hadoop-3.0.0 /opt/apache/hadoop && \
+    ln -s /opt/ros_hadoop/master/lib/rosbaginputformat.jar /opt/ros_hadoop/latest/lib/rosbaginputformat.jar && \
+    ln -s /opt/apache/spark-2.2.1-bin-hadoop2.7 /opt/apache/spark && ip a && tree -d -L 3 /opt/apache/
 
-RUN ln -s /opt/apache/hadoop-2.8.1 /opt/apache/hadoop && \
-    ln -s /opt/apache/spark-2.2.0-bin-hadoop2.7 /opt/apache/spark
-
-RUN printf "<configuration>\n<property>\n<name>fs.defaultFS</name>\n<value>hdfs://localhost:9000</value>\n</property>\n</configuration>" > /opt/apache/hadoop/etc/hadoop/core-site.xml && \
+RUN printf "<configuration>\n\n<property>\n<name>fs.defaultFS</name>\n<value>hdfs://localhost:9000</value>\n</property>\n</configuration>" > /opt/apache/hadoop/etc/hadoop/core-site.xml && \
     printf "<configuration>\n<property>\n<name>dfs.replication</name>\n<value>1</value>\n</property>\n</configuration>" > /opt/apache/hadoop/etc/hadoop/hdfs-site.xml && \
     bash -c "/opt/apache/hadoop/bin/hdfs namenode -format 2>/dev/null" && \
-    printf "#! /bin/bash\nset -e\nsource \"/opt/ros/$ROS_DISTRO/setup.bash\"\n/opt/apache/hadoop/sbin/hadoop-daemon.sh --script hdfs start namenode\n/opt/apache/hadoop/sbin/hadoop-daemon.sh --script hdfs start datanode\nexec \"\$@\"\n" > /ros_hadoop.sh && \
+    printf "#! /bin/bash\n/opt/apache/hadoop/bin/hdfs --daemon stop datanode\n/opt/apache/hadoop/bin/hdfs --daemon stop namenode\n/opt/apache/hadoop/bin/hdfs --daemon start namenode\n/opt/apache/hadoop/bin/hdfs --daemon start datanode\nexec \"\$@\"\n" > /start_hadoop.sh && \
+    chmod a+x /start_hadoop.sh
+
+RUN printf "#! /bin/bash\nset -e\nsource \"/opt/ros/$ROS_DISTRO/setup.bash\"\n/start_hadoop.sh\nexec \"\$@\"\n" > /ros_hadoop.sh && \
     chmod a+x /ros_hadoop.sh
 
-RUN bash -c "/ros_hadoop.sh 2>/dev/null" && \
+RUN bash -c "if [ ! -f /opt/ros_hadoop/master/dist/HMB_4.bag ] ; then wget --quiet -O /opt/ros_hadoop/master/dist/HMB_4.bag https://xfiles.valtech.io/f/c494d168522045e3bcc0/?dl=1 ; fi" && \
+    java -jar "$ROSIF_JAR" -f /opt/ros_hadoop/master/dist/HMB_4.bag
+
+RUN bash -c "/start_hadoop.sh" && \
+    /opt/apache/hadoop/bin/hdfs dfsadmin -report && \
+    /opt/apache/hadoop/bin/hdfs dfsadmin -safemode wait && \
     /opt/apache/hadoop/bin/hdfs dfs -mkdir /user && \
     /opt/apache/hadoop/bin/hdfs dfs -mkdir /user/root && \
-    /opt/apache/hadoop/bin/hdfs dfs -put /srv/data/HMB_4.bag && \
-    java -jar "$ROSIF_JAR" -f /srv/data/HMB_4.bag && \
-    /opt/apache/hadoop/sbin/hadoop-daemon.sh --script hdfs stop datanode && \
-    /opt/apache/hadoop/sbin/hadoop-daemon.sh --script hdfs stop namenode
+    /opt/apache/hadoop/bin/hdfs dfs -put /opt/ros_hadoop/master/dist/HMB_4.bag && \
+    /opt/apache/hadoop/bin/hdfs --daemon stop datanode && \
+    /opt/apache/hadoop/bin/hdfs --daemon stop namenode
 
-WORKDIR /opt/ros_hadoop/ros_hadoop-0.9.3/doc/
+WORKDIR /opt/ros_hadoop/latest/doc/
 ENTRYPOINT ["/ros_hadoop.sh"]
-CMD ["/opt/apache/spark/bin/pyspark","--num-executors","2","--driver-memory","5g","--executor-memory","8g","--jars=../lib/rosbaginputformat_2.11-0.9.3.jar,../lib/protobuf-java-3.3.0.jar"]
-
-# PYSPARK_DRIVER_PYTHON=jupyter PYSPARK_DRIVER_PYTHON_OPTS="notebook --allow-root --ip=0.0.0.0" /opt/apache/spark/bin/pyspark --num-executors 2 --driver-memory 5g --executor-memory 8g --jars=../lib/rosbaginputformat_2.11-0.9.3.jar,../lib/protobuf-java-3.3.0.jar
+# CMD ["/opt/apache/spark/bin/pyspark","--num-executors","2","--driver-memory","5g","--executor-memory","8g","--jars=$(ls -1 lib/ | tr '\n' ',')"]
+CMD ["jupyter", "notebook", "--allow-root", "--ip=0.0.0.0"]

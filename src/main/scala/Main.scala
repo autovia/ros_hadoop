@@ -36,8 +36,8 @@ object Main extends App {
 ${RESET}${GREEN}Usage:
 	--file <ros.bag> file to process
 	--version print Rosbag version and exit
-	--offset <offset> --number <records> Seek at offset and read the specified number of records
-${RESET}By default will just print to stdin the idx array needed for configuration.\n\n""")
+	--offset <offset> --number <records> Seek at offset < 1073741824 and read the specified number of records
+${RESET}By default will just create the protobuf idx file needed for configuration.\n\n""")
     sys.exit(0)
   }
 
@@ -74,8 +74,8 @@ ${RESET}By default will just print to stdin the idx array needed for configurati
   def process(): Unit = {
     val fin = new File(pargs("file").asInstanceOf[String])
     use(new FileInputStream(fin)) { stream => {
-      val buffer = stream.getChannel.map(READ_ONLY, 0, fin.length)
-        .order(LITTLE_ENDIAN)
+      printf("min: %s\n", Math.min(1073741824, fin.length) )
+      val buffer = stream.getChannel.map(READ_ONLY, 0, Math.min(1073741824, fin.length)).order(LITTLE_ENDIAN)
       val p:RosbagParser = new RosbagParser(buffer)
       val version = p.read_version()
       val h = p.read_record().get
@@ -89,13 +89,16 @@ ${RESET}By default will just print to stdin the idx array needed for configurati
           println(p.read_record)
         return
       }
-      buffer position h.header.fields("index_pos").asInstanceOf[Long].toInt
-      val c = p.read_connections(h.header, Nil)
-      val chunk_idx = p.read_chunk_infos(c)
+      val idxpos = h.header.fields("index_pos").asInstanceOf[Long]
+      printf("idxpos: %s %s\n", idxpos, Math.min(1073741824, fin.length) )
+      val b = stream.getChannel.map(READ_ONLY, idxpos, Math.min(1073741824, fin.length - idxpos)).order(LITTLE_ENDIAN)
+      val pp:RosbagParser = new RosbagParser(b)
+      val c = pp.read_connections(h.header, Nil)
+      val chunk_idx = pp.read_chunk_infos(c)
+      println("Found: "+chunk_idx.size+" chunks\n")
       val fout = new FileOutputStream(pargs("file").asInstanceOf[String] + ".idx.bin")
       val builder = RosbagIdx.newBuilder
-      for(i <- chunk_idx)
-	builder.addArray(i)
+      for(i <- chunk_idx) builder.addArray(i)
       builder.build().writeTo(fout)
       fout.close()
       //printf("[%s]\n",chunk_idx.toArray.mkString(","))

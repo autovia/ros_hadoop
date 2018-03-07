@@ -118,7 +118,7 @@ class RosbagParser(f: ByteBuffer) {
   val decode = Map[Byte, (Header) => BagRecord]()
   decode(0x07) = decode_x07
   decode(0x06) = decode_x06
-  decode(0x05) = decode_x05  
+  decode(0x05) = decode_x05
   decode(0x04) = decode_x04
   decode(0x03) = decode_x03
   decode(0x02) = decode_x02
@@ -148,6 +148,7 @@ class RosbagParser(f: ByteBuffer) {
   def read_record(): Option[BagRecord] = {
     if(!f.hasRemaining | f.remaining < 4) return None
     val h = read_header()
+    if(h.len == 0) return None
     Some(decode(h.fields("op").asInstanceOf[Byte])(h))
   }
 
@@ -176,4 +177,3 @@ class RosbagParser(f: ByteBuffer) {
   }
 
 }
-
