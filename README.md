@@ -3,6 +3,8 @@ RosbagInputFormat is an open source **splittable** Hadoop InputFormat for the RO
 
 The complete source code is available in src/ folder and the jar file is generated using SBT (see build.sbt)
 
+For an example of rosbag file larger than 2 GB see doc/Rosbag larger than 2 GB.ipynb Solved the issue https://github.com/valtech/ros_hadoop/issues/6 The issue was due to ByteBuffer being limitted by JVM Integer size and has nothing to do with Spark or how the RosbagMapInputFormat works within Spark. It was only problematic to extract the conf index with the jar.
+
 # Usage
 
 1. Download latest release jar file and put it in classpath
