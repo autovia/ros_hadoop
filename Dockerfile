@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN python2 -m pip install --upgrade --user pip && \
     python3 -m pip install --upgrade --user pip && \
     pip3 install --no-cache-dir --upgrade jupyter && \
-    pip2 install --no-cache-dir --upgrade matplotlib pandas tensorflow keras Pillow && \
+    pip2 install --no-cache-dir --upgrade pyspark matplotlib pandas tensorflow keras Pillow && \
     python2 -m pip install ipykernel && \
     python2 -m ipykernel install && \
     python3 -m pip install ipykernel && \
@@ -28,9 +28,7 @@ RUN bash -c 'echo "yaml http://packages.dataspeedinc.com/ros/ros-public-'$ROS_DI
 RUN locale-gen en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
-ENV PATH $PATH:/opt/apache/hadoop/bin:/opt/apache/spark/bin
-ENV PYSPARK_DRIVER_PYTHON jupyter
-ENV PYSPARK_DRIVER_PYTHON_OPTS "notebook --allow-root --ip=0.0.0.0"
+ENV PATH $PATH:/opt/apache/hadoop/bin
 ENV ROSIF_JAR /opt/ros_hadoop/master/lib/rosbaginputformat.jar
 
 RUN mkdir -p /opt/ros_hadoop/latest
@@ -39,14 +37,12 @@ RUN mkdir -p /opt/apache/
 ADD . /opt/ros_hadoop/master
 RUN bash -c "curl -s https://api.github.com/repos/valtech/ros_hadoop/releases/latest | egrep -io 'https://api.github.com/repos/valtech/ros_hadoop/tarball/[^\"]*' | xargs wget --quiet -O /opt/ros_hadoop/latest.tgz"
 RUN bash -c "if [ ! -f /opt/ros_hadoop/master/dist/hadoop-3.0.0.tar.gz ] ; then wget --quiet -O /opt/ros_hadoop/master/dist/hadoop-3.0.0.tar.gz http://www-eu.apache.org/dist/hadoop/common/hadoop-3.0.0/hadoop-3.0.0.tar.gz ; fi"
-RUN bash -c "if [ ! -f /opt/ros_hadoop/master/dist/spark-2.2.1-bin-hadoop2.7.tgz ] ; then wget --quiet -O /opt/ros_hadoop/master/dist/spark-2.2.1-bin-hadoop2.7.tgz http://www-eu.apache.org/dist/spark/spark-2.2.1/spark-2.2.1-bin-hadoop2.7.tgz ; fi"
 RUN tar -xzf /opt/ros_hadoop/latest.tgz -C /opt/ros_hadoop/latest --strip-components=1 && rm /opt/ros_hadoop/latest.tgz
 RUN tar -xzf /opt/ros_hadoop/master/dist/hadoop-3.0.0.tar.gz -C /opt/apache && rm /opt/ros_hadoop/master/dist/hadoop-3.0.0.tar.gz
-RUN tar -xzf /opt/ros_hadoop/master/dist/spark-2.2.1-bin-hadoop2.7.tgz -C /opt/apache && rm /opt/ros_hadoop/master/dist/spark-2.2.1-bin-hadoop2.7.tgz
 
 RUN ln -s /opt/apache/hadoop-3.0.0 /opt/apache/hadoop && \
     ln -s /opt/ros_hadoop/master/lib/rosbaginputformat.jar /opt/ros_hadoop/latest/lib/rosbaginputformat.jar && \
-    ln -s /opt/apache/spark-2.2.1-bin-hadoop2.7 /opt/apache/spark && ip a && tree -d -L 3 /opt/apache/
+    ip a && tree -d -L 3 /opt/apache/
 
 RUN printf "<configuration>\n\n<property>\n<name>fs.defaultFS</name>\n<value>hdfs://localhost:9000</value>\n</property>\n</configuration>" > /opt/apache/hadoop/etc/hadoop/core-site.xml && \
     printf "<configuration>\n<property>\n<name>dfs.replication</name>\n<value>1</value>\n</property>\n</configuration>" > /opt/apache/hadoop/etc/hadoop/hdfs-site.xml && \
@@ -71,5 +67,4 @@ RUN bash -c "/start_hadoop.sh" && \
 
 WORKDIR /opt/ros_hadoop/latest/doc/
 ENTRYPOINT ["/ros_hadoop.sh"]
-# CMD ["/opt/apache/spark/bin/pyspark","--num-executors","2","--driver-memory","5g","--executor-memory","8g","--jars=$(ls -1 lib/ | tr '\n' ',')"]
 CMD ["jupyter", "notebook", "--allow-root", "--ip=0.0.0.0"]
