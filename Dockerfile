@@ -57,8 +57,8 @@ RUN bash -c "if [ ! -f /opt/ros_hadoop/master/dist/HMB_4.bag ] ; then wget --qui
     java -jar "$ROSIF_JAR" -f /opt/ros_hadoop/master/dist/HMB_4.bag
 
 RUN bash -c "/start_hadoop.sh" && \
-    /opt/apache/hadoop/bin/hdfs dfsadmin -report && \
     /opt/apache/hadoop/bin/hdfs dfsadmin -safemode wait && \
+    /opt/apache/hadoop/bin/hdfs dfsadmin -report && \
     /opt/apache/hadoop/bin/hdfs dfs -mkdir /user && \
     /opt/apache/hadoop/bin/hdfs dfs -mkdir /user/root && \
     /opt/apache/hadoop/bin/hdfs dfs -put /opt/ros_hadoop/master/dist/HMB_4.bag && \

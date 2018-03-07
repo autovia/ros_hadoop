@@ -74,7 +74,7 @@ ${RESET}By default will just create the protobuf idx file needed for configurati
   def process(): Unit = {
     val fin = new File(pargs("file").asInstanceOf[String])
     use(new FileInputStream(fin)) { stream => {
-      printf("min: %s\n", Math.min(1073741824, fin.length) )
+      //printf("min: %s\n", Math.min(1073741824, fin.length) )
       val buffer = stream.getChannel.map(READ_ONLY, 0, Math.min(1073741824, fin.length)).order(LITTLE_ENDIAN)
       val p:RosbagParser = new RosbagParser(buffer)
       val version = p.read_version()
@@ -90,12 +90,15 @@ ${RESET}By default will just create the protobuf idx file needed for configurati
         return
       }
       val idxpos = h.header.fields("index_pos").asInstanceOf[Long]
-      printf("idxpos: %s %s\n", idxpos, Math.min(1073741824, fin.length) )
+      //printf("idxpos: %s %s\n", idxpos, Math.min(1073741824, fin.length) )
       val b = stream.getChannel.map(READ_ONLY, idxpos, Math.min(1073741824, fin.length - idxpos)).order(LITTLE_ENDIAN)
       val pp:RosbagParser = new RosbagParser(b)
       val c = pp.read_connections(h.header, Nil)
       val chunk_idx = pp.read_chunk_infos(c)
-      println("Found: "+chunk_idx.size+" chunks\n")
+      Console.err.printf(s"""${RESET}${GREEN}Found: """
+          + chunk_idx.size
+          +s""" chunks\n${RESET}It should be the same number reported by rosbag tool.\nIf you encounter any issues try reindexing your file and submit an issue.
+          ${RESET}\n""")
       val fout = new FileOutputStream(pargs("file").asInstanceOf[String] + ".idx.bin")
       val builder = RosbagIdx.newBuilder
       for(i <- chunk_idx) builder.addArray(i)
