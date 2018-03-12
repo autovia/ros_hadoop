@@ -40,9 +40,8 @@ RUN bash -c "if [ ! -f /opt/ros_hadoop/master/dist/hadoop-3.0.0.tar.gz ] ; then 
 RUN tar -xzf /opt/ros_hadoop/latest.tgz -C /opt/ros_hadoop/latest --strip-components=1 && rm /opt/ros_hadoop/latest.tgz
 RUN tar -xzf /opt/ros_hadoop/master/dist/hadoop-3.0.0.tar.gz -C /opt/apache && rm /opt/ros_hadoop/master/dist/hadoop-3.0.0.tar.gz
 
-RUN ln -s /opt/apache/hadoop-3.0.0 /opt/apache/hadoop && \
-    ln -s /opt/ros_hadoop/master/lib/rosbaginputformat.jar /opt/ros_hadoop/latest/lib/rosbaginputformat.jar && \
-    ip a && tree -d -L 3 /opt/apache/
+RUN ln -s /opt/apache/hadoop-3.0.0 /opt/apache/hadoop 
+RUN bash -c "if [ ! -f /opt/ros_hadoop/latest/lib/rosbaginputformat.jar ] ; then ln -s /opt/ros_hadoop/master/lib/rosbaginputformat.jar /opt/ros_hadoop/latest/lib/rosbaginputformat.jar ; fi"
 
 RUN printf "<configuration>\n\n<property>\n<name>fs.defaultFS</name>\n<value>hdfs://localhost:9000</value>\n</property>\n</configuration>" > /opt/apache/hadoop/etc/hadoop/core-site.xml && \
     printf "<configuration>\n<property>\n<name>dfs.replication</name>\n<value>1</value>\n</property>\n</configuration>" > /opt/apache/hadoop/etc/hadoop/hdfs-site.xml && \
