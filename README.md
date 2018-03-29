@@ -62,7 +62,7 @@ Example data can be found for instance at https://github.com/udacity/self-drivin
 Check that the Rosbag file version is V2.0
 
 ```bash
-java -jar lib/rosbaginputformat.jar --version -f HMB_1.bag
+java -jar lib/rosbaginputformat.jar --version -f /opt/ros_hadoop/master/dist/HMB_4.bag
 ```
 
 ### Extract the index as configuration
@@ -78,7 +78,7 @@ java -jar ../lib/rosbaginputformat.jar \
 hdfs dfs -ls
 ```
 
-This will generate a very small file named HMB_1.bag.idx.bin in the same folder.
+This will generate a very small file named HMB_4.bag.idx.bin in the same folder.
 
 ### Copy the bag file in HDFS
 
