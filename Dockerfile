@@ -15,6 +15,9 @@ RUN python2 -m pip install --upgrade --user pip && \
     python3 -m pip install ipykernel && \
     python3 -m ipykernel install
 
+RUN pip2 install seaborn gmaps
+RUN jupyter nbextension enable --py gmaps
+
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 66F84AE1EB71A8AC108087DCAF677210FF6D3CDA && \
     bash -c 'echo "deb [ arch=amd64 ] http://packages.dataspeedinc.com/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-dataspeed-public.list' && \
     apt-get update
