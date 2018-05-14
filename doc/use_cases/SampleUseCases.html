@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8" />
-<title>ObjectDetection</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+<title>SampleUseCases</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 
 <style type="text/css">
@@ -12029,14 +12029,38 @@ Using TensorFlow backend.
 </div>
 </div>
 
-</div>'''
-idx = 0
-for im, sa, x, y, z, v in zip(images, cdf.steering_angle, 
-                           cdf.linear_accelaration_x, cdf.linear_accelaration_y, cdf.linear_accelaration_z, 
-                           cdf.velocity):
-    add_text(im.copy(), round(sa,4), round(x,2), round(y,2), round(z,2), round(v,4), idx)
-    idx += 1
-'''!ffmpeg -hide_banner -loglevel panic -r 30  -pattern_type glob -i './annotated-frames/*.png' -c:v libx264 drive-stats.mp4
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">im</span><span class="p">,</span> <span class="n">sa</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">cdf</span><span class="o">.</span><span class="n">steering_angle</span><span class="p">,</span> 
+                           <span class="n">cdf</span><span class="o">.</span><span class="n">linear_accelaration_x</span><span class="p">,</span> <span class="n">cdf</span><span class="o">.</span><span class="n">linear_accelaration_y</span><span class="p">,</span> <span class="n">cdf</span><span class="o">.</span><span class="n">linear_accelaration_z</span><span class="p">,</span> 
+                           <span class="n">cdf</span><span class="o">.</span><span class="n">velocity</span><span class="p">):</span>
+    <span class="n">add_text</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="nb">round</span><span class="p">(</span><span class="n">sa</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="n">idx</span><span class="p">)</span>
+    <span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="o">!</span>ffmpeg -hide_banner -loglevel panic -r <span class="m">30</span>  -pattern_type glob -i <span class="s1">&#39;./annotated-frames/*.png&#39;</span> -c:v libx264 drive-stats.mp4
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[19]:</div>
@@ -12314,13 +12338,37 @@ Ref: <a href="https://github.com/experiencor/keras-yolo2">https://github.com/exp
 </div>
 </div>
 
-</div>'''
-idx = 0
-for image in images:
-    annotatedImage = objDetector.detect_obj(image.copy())
-    cv2.imwrite('./obj-detection-frames/{0:05d}.png'.format(idx), annotatedImage)
-    idx += 1
-'''!ffmpeg -hide_banner -loglevel panic -r 30  -pattern_type glob -i './obj-detection-frames/*.png' -c:v libx264 drive-obj-detect.mp4
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">images</span><span class="p">:</span>
+    <span class="n">annotatedImage</span> <span class="o">=</span> <span class="n">objDetector</span><span class="o">.</span><span class="n">detect_obj</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+    <span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s1">&#39;./obj-detection-frames/{0:05d}.png&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx</span><span class="p">),</span> <span class="n">annotatedImage</span><span class="p">)</span>
+    <span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="o">!</span>ffmpeg -hide_banner -loglevel panic -r <span class="m">30</span>  -pattern_type glob -i <span class="s1">&#39;./obj-detection-frames/*.png&#39;</span> -c:v libx264 drive-obj-detect.mp4
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[65]:</div>
