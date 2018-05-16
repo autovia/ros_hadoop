@@ -6,8 +6,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openjdk-8-jdk-headless \
     && rm -rf /var/lib/apt/lists/*
 
-RUN python2 -m pip install --upgrade --user pip && \
-    python3 -m pip install --upgrade --user pip && \
+RUN python2 -m pip install --upgrade pip && \
+    python3 -m pip install --upgrade pip && \
     pip3 install --no-cache-dir --upgrade jupyter && \
     pip2 install --no-cache-dir --upgrade pyspark matplotlib pandas tensorflow keras Pillow && \
     python2 -m pip install ipykernel && \
@@ -39,12 +39,12 @@ RUN mkdir -p /opt/ros_hadoop/master/dist/
 RUN mkdir -p /opt/apache/
 ADD . /opt/ros_hadoop/master
 RUN bash -c "curl -s https://api.github.com/repos/valtech/ros_hadoop/releases/latest | egrep -io 'https://api.github.com/repos/valtech/ros_hadoop/tarball/[^\"]*' | xargs wget --quiet -O /opt/ros_hadoop/latest.tgz"
-RUN bash -c "if [ ! -f /opt/ros_hadoop/master/dist/hadoop-3.0.0.tar.gz ] ; then wget --quiet -O /opt/ros_hadoop/master/dist/hadoop-3.0.0.tar.gz http://www-eu.apache.org/dist/hadoop/common/hadoop-3.0.0/hadoop-3.0.0.tar.gz ; fi"
+RUN bash -c "if [ ! -f /opt/ros_hadoop/master/dist/hadoop-3.0.2.tar.gz ] ; then wget --quiet -O /opt/ros_hadoop/master/dist/hadoop-3.0.2.tar.gz http://www-eu.apache.org/dist/hadoop/common/hadoop-3.0.2/hadoop-3.0.2.tar.gz ; fi"
 RUN tar -xzf /opt/ros_hadoop/latest.tgz -C /opt/ros_hadoop/latest --strip-components=1 && rm /opt/ros_hadoop/latest.tgz
-RUN tar -xzf /opt/ros_hadoop/master/dist/hadoop-3.0.0.tar.gz -C /opt/apache && rm /opt/ros_hadoop/master/dist/hadoop-3.0.0.tar.gz
+RUN tar -xzf /opt/ros_hadoop/master/dist/hadoop-3.0.2.tar.gz -C /opt/apache && rm /opt/ros_hadoop/master/dist/hadoop-3.0.2.tar.gz
 
-RUN ln -s /opt/apache/hadoop-3.0.0 /opt/apache/hadoop && \
-    ln -s /opt/ros_hadoop/master/lib/rosbaginputformat.jar /opt/ros_hadoop/latest/lib/rosbaginputformat.jar && \
+RUN ln -fs /opt/apache/hadoop-3.0.2 /opt/apache/hadoop && \
+    ln -fs /opt/ros_hadoop/master/lib/rosbaginputformat.jar /opt/ros_hadoop/latest/lib/rosbaginputformat.jar && \
     ip a && tree -d -L 3 /opt/apache/
 
 RUN printf "<configuration>\n\n<property>\n<name>fs.defaultFS</name>\n<value>hdfs://localhost:9000</value>\n</property>\n</configuration>" > /opt/apache/hadoop/etc/hadoop/core-site.xml && \
