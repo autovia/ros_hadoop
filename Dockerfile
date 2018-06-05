@@ -1,4 +1,4 @@
-FROM ros
+FROM ros:kinetic
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     locales bzip2 tree unzip xz-utils curl wget iproute2 \
@@ -39,7 +39,7 @@ RUN mkdir -p /opt/ros_hadoop/master/dist/
 RUN mkdir -p /opt/apache/
 ADD . /opt/ros_hadoop/master
 RUN bash -c "curl -s https://api.github.com/repos/valtech/ros_hadoop/releases/latest | egrep -io 'https://api.github.com/repos/valtech/ros_hadoop/tarball/[^\"]*' | xargs wget --quiet -O /opt/ros_hadoop/latest.tgz"
-RUN bash -c "if [ ! -f /opt/ros_hadoop/master/dist/hadoop-3.0.2.tar.gz ] ; then wget --quiet -O /opt/ros_hadoop/master/dist/hadoop-3.0.2.tar.gz http://www-eu.apache.org/dist/hadoop/common/hadoop-3.0.2/hadoop-3.0.2.tar.gz ; fi"
+RUN bash -c "if [ ! -f /opt/ros_hadoop/master/dist/hadoop-3.0.2.tar.gz ] ; then wget --quiet -O /opt/ros_hadoop/master/dist/hadoop-3.0.2.tar.gz http://www.eu.apache.org/dist/hadoop/common/hadoop-3.0.2/hadoop-3.0.2.tar.gz ; fi"
 RUN tar -xzf /opt/ros_hadoop/latest.tgz -C /opt/ros_hadoop/latest --strip-components=1 && rm /opt/ros_hadoop/latest.tgz
 RUN tar -xzf /opt/ros_hadoop/master/dist/hadoop-3.0.2.tar.gz -C /opt/apache && rm /opt/ros_hadoop/master/dist/hadoop-3.0.2.tar.gz
 
