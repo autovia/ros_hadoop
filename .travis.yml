@@ -1,9 +1,12 @@
 sudo: required
 
-language: python
+language: scala
 
 services:
   - docker
 
 script:
   - docker build .
+  - sbt compile
+  - sbt package
+  - sbt test
