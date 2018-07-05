@@ -7,7 +7,7 @@ The complete source code is available in src/ folder and the jar file is generat
 
 For an example of rosbag file larger than 2 GB see doc/Rosbag larger than 2 GB.ipynb Solved the issue https://github.com/valtech/ros_hadoop/issues/6 The issue was due to ByteBuffer being limitted by JVM Integer size and has nothing to do with Spark or how the RosbagMapInputFormat works within Spark. It was only problematic to extract the conf index with the jar.
 
-# Usage on a single machine
+# Workflow
 
 1. Download latest release jar file and put it in classpath
 2. Extract the index configuration of your ROS bag file. **The extracted index is a very very small configuration** file containing a protobuf array that will be given in the job configuration. **Note that the operation will not process and it will not parse** the whole bag file, but will simply seek to the required offset. e.g.
@@ -31,9 +31,9 @@ sc.newAPIHadoopFile(
 
 Example data can be found for instance at https://github.com/udacity/self-driving-car/tree/master/datasets published under MIT License.
 
-# Usage on a Kubernetes cluster
+# Usage on a Kubernetes cluster for processing at scale
 
-Check out our Flux project: https://github.com/flux-project/flux
+Check out our Flux project (Machine Learning Stack for Big Data): https://github.com/flux-project/flux
 
 # Documentation
 The [doc/](doc/) folder contains a jupyter notebook with a few basic usage examples.
