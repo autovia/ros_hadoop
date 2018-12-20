@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/valtech/ros_hadoop.svg?branch=master)](https://travis-ci.org/valtech/ros_hadoop)
-
 # **RosbagInputFormat**
 RosbagInputFormat is an open source **splittable** Hadoop InputFormat for the ROS bag file format.
 
