@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN python2 -m pip install --upgrade pip && \
     python3 -m pip install --upgrade pip && \
     pip3 install --no-cache-dir --upgrade jupyter && \
-    pip2 install --no-cache-dir --upgrade pyspark matplotlib pandas tensorflow keras Pillow && \
+    pip2 install --no-cache-dir --upgrade pyspark==3.0.1 matplotlib==2.2.3 pandas==0.23.2 tensorflow==1.9.0 keras==2.0.7 Pillow==6.2.2 && \
     python2 -m pip install ipykernel && \
     python2 -m ipykernel install && \
     python3 -m pip install ipykernel && \
@@ -38,12 +38,12 @@ RUN mkdir -p /opt/ros_hadoop/latest
 RUN mkdir -p /opt/ros_hadoop/master/dist/
 RUN mkdir -p /opt/apache/
 ADD . /opt/ros_hadoop/master
-RUN bash -c "curl -s https://api.github.com/repos/valtech/ros_hadoop/releases/latest | egrep -io 'https://api.github.com/repos/valtech/ros_hadoop/tarball/[^\"]*' | xargs wget --quiet -O /opt/ros_hadoop/latest.tgz"
-RUN bash -c "if [ ! -f /opt/ros_hadoop/master/dist/hadoop-3.0.2.tar.gz ] ; then wget --quiet -O /opt/ros_hadoop/master/dist/hadoop-3.0.2.tar.gz http://www.eu.apache.org/dist/hadoop/common/hadoop-3.0.2/hadoop-3.0.2.tar.gz ; fi"
+RUN bash -c "curl -s https://api.github.com/repos/autovia/ros_hadoop/releases/latest | egrep -io 'https://api.github.com/repos/autovia/ros_hadoop/tarball/[^\"]*' | xargs wget --quiet -O /opt/ros_hadoop/latest.tgz"
+RUN bash -c "if [ ! -f /opt/ros_hadoop/master/dist/hadoop-3.0.2.tar.gz ] ; then wget --quiet -O /opt/ros_hadoop/master/dist/hadoop-3.0.2.tar.gz https://archive.apache.org/dist/hadoop/common/hadoop-3.0.2/hadoop-3.0.2.tar.gz ; fi"
 RUN tar -xzf /opt/ros_hadoop/latest.tgz -C /opt/ros_hadoop/latest --strip-components=1 && rm /opt/ros_hadoop/latest.tgz
 RUN tar -xzf /opt/ros_hadoop/master/dist/hadoop-3.0.2.tar.gz -C /opt/apache && rm /opt/ros_hadoop/master/dist/hadoop-3.0.2.tar.gz
 
-RUN ln -s /opt/apache/hadoop-3.0.2 /opt/apache/hadoop 
+RUN ln -s /opt/apache/hadoop-3.0.2 /opt/apache/hadoop
 RUN bash -c "if [ ! -f /opt/ros_hadoop/latest/lib/rosbaginputformat.jar ] ; then ln -s /opt/ros_hadoop/master/lib/rosbaginputformat.jar /opt/ros_hadoop/latest/lib/rosbaginputformat.jar ; fi"
 
 RUN printf "<configuration>\n\n<property>\n<name>fs.defaultFS</name>\n<value>hdfs://localhost:9000</value>\n</property>\n</configuration>" > /opt/apache/hadoop/etc/hadoop/core-site.xml && \
@@ -55,7 +55,7 @@ RUN printf "<configuration>\n\n<property>\n<name>fs.defaultFS</name>\n<value>hdf
 RUN printf "#! /bin/bash\nset -e\nsource \"/opt/ros/$ROS_DISTRO/setup.bash\"\n/start_hadoop.sh\nexec \"\$@\"\n" > /ros_hadoop.sh && \
     chmod a+x /ros_hadoop.sh
 
-RUN bash -c "if [ ! -f /opt/ros_hadoop/master/dist/HMB_4.bag ] ; then wget --quiet -O /opt/ros_hadoop/master/dist/HMB_4.bag https://xfiles.valtech.io/f/c494d168522045e3bcc0/?dl=1 ; fi" && \
+RUN bash -c "if [ ! -f /opt/ros_hadoop/master/dist/HMB_4.bag ] ; then wget --quiet -O /opt/ros_hadoop/master/dist/HMB_4.bag https://data.autovia.io/f/ros_hadoop/HMB_4.bag ; fi" && \
     java -jar "$ROSIF_JAR" -f /opt/ros_hadoop/master/dist/HMB_4.bag
 
 RUN bash -c "/start_hadoop.sh" && \

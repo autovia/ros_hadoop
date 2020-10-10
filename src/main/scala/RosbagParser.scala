@@ -12,7 +12,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-package de.valtech.foss
+package io.autovia.foss
 
 import scala.io.Source
 import scala.collection.mutable.Map

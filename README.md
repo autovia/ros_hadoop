@@ -3,8 +3,6 @@ RosbagInputFormat is an open source **splittable** Hadoop InputFormat for the RO
 
 The complete source code is available in src/ folder and the jar file is generated using SBT (see build.sbt)
 
-For an example of rosbag file larger than 2 GB see doc/Rosbag larger than 2 GB.ipynb Solved the issue https://github.com/valtech/ros_hadoop/issues/6 The issue was due to ByteBuffer being limitted by JVM Integer size and has nothing to do with Spark or how the RosbagMapInputFormat works within Spark. It was only problematic to extract the conf index with the jar.
-
 # Workflow
 
 1. Download latest release jar file and put it in classpath
@@ -21,17 +19,13 @@ hdfs dfs -put
 ```python
 sc.newAPIHadoopFile(
     path =             "hdfs://127.0.0.1:9000/user/spark/HMB_4.bag",
-    inputFormatClass = "de.valtech.foss.RosbagMapInputFormat",
+    inputFormatClass = "io.autovia.foss.RosbagMapInputFormat",
     keyClass =         "org.apache.hadoop.io.LongWritable",
     valueClass =       "org.apache.hadoop.io.MapWritable",
     conf = {"RosbagInputFormat.chunkIdx":"/opt/ros_hadoop/master/dist/HMB_4.bag.idx.bin"})
 ```
 
 Example data can be found for instance at https://github.com/udacity/self-driving-car/tree/master/datasets published under MIT License.
-
-# Usage on a Kubernetes cluster for processing at scale
-
-Check out our Flux project (Machine Learning Stack for Big Data): https://github.com/flux-project/flux
 
 # Documentation
 The [doc/](doc/) folder contains a jupyter notebook with a few basic usage examples.
@@ -108,7 +102,7 @@ hdfs dfs -ls
 ```python
 fin = sc.newAPIHadoopFile(
     path =             "hdfs://127.0.0.1:9000/user/root/HMB_4.bag",
-    inputFormatClass = "de.valtech.foss.RosbagMapInputFormat",
+    inputFormatClass = "io.autovia.foss.RosbagMapInputFormat",
     keyClass =         "org.apache.hadoop.io.LongWritable",
     valueClass =       "org.apache.hadoop.io.MapWritable",
     conf = {“RosbagInputFormat.chunkIdx”:”/opt/ros_hadoop/master/dist/HMB_4.bag.idx.bin"})
@@ -272,8 +266,3 @@ One can sample of course and collect the data in the driver to train a model on 
 Note that the msg is the most granular unit but you could replace the flatMap with a mapPartitions to apply such a Keras function to a whole split.
 
 Another option would be to have a map.reduceByKey before the flatMap so that the function argument would be a whole interval instead of a msg. The idea is to key on time.
-
-We hope that the RosbagInputFormat would be useful to you.
-
-## Please do not forget to send us your [feedback](AUTHORS).
-![doc/images/browse-tutorial.png](doc/images/browse-tutorial.png)

@@ -12,7 +12,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-package de.valtech.foss
+package io.autovia.foss
 
 import scala.collection.JavaConverters._
 
@@ -28,7 +28,7 @@ import org.apache.hadoop.io.compress.CompressionCodecFactory
 import org.apache.hadoop.mapreduce.{InputSplit, RecordReader, TaskAttemptContext}
 import org.apache.hadoop.mapreduce.lib.input.FileSplit
 
-import de.valtech.foss.proto.RosbagIdxOuterClass.RosbagIdx
+import io.autovia.foss.proto.RosbagIdxOuterClass.RosbagIdx
 
 class RosbagBytesRecordReader extends RecordReader[LongWritable, BytesWritable] {
 

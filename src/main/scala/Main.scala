@@ -12,7 +12,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-package de.valtech.foss
+package io.autovia.foss
 
 import scala.io.Source
 import scala.collection.mutable.Map
@@ -28,7 +28,7 @@ import java.nio.channels.FileChannel.MapMode._
 import java.nio.ByteOrder._
 import java.nio.ByteBuffer
 
-import de.valtech.foss.proto.RosbagIdxOuterClass.RosbagIdx
+import io.autovia.foss.proto.RosbagIdxOuterClass.RosbagIdx
 
 object Main extends App {
   def help() = {
