@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN python2 -m pip install --upgrade pip && \
     python3 -m pip install --upgrade pip && \
     pip3 install --no-cache-dir --upgrade jupyter && \
-    pip2 install --no-cache-dir --upgrade pyspark==3.0.1 matplotlib==2.2.3 pandas==0.23.2 tensorflow==1.9.0 keras==2.0.7 Pillow==6.2.2 && \
+    pip2 install --no-cache-dir --upgrade pyspark==3.0.1 matplotlib==2.2.3 setuptools==36.0.1 python-dateutil==2.5.0 pandas==0.23.2 numpy==1.13.3 six==1.11.0 tensorflow==1.9.0 keras==2.0.7 Pillow==6.2.2 && \
     python2 -m pip install ipykernel && \
     python2 -m ipykernel install && \
     python3 -m pip install ipykernel && \
