@@ -107,8 +107,11 @@ class RosbagParser(f: ByteBuffer) {
   }
 
   def decode_x02(h:Header) = {
-    h.fields("time") = as_buffer(h.fields("time")).getLong
-    h.fields("conn") =  as_buffer(h.fields("conn")).getInt
+    val time_bytes = h.fields("time").asInstanceOf[Array[Byte]]
+    val time_secs = as_buffer(time_bytes.slice(0, 4)).getInt.toLong
+    val time_nsecs = as_buffer(time_bytes.slice(4, 8)).getInt.toLong
+    h.fields("time") = time_secs * 1000000000 + time_nsecs
+    h.fields("conn") = as_buffer(h.fields("conn")).getInt
     val len = f.getInt
     val b = Array.ofDim[Byte](len)
     f get b
