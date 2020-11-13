@@ -1,4 +1,7 @@
-# **RosbagInputFormat**
+# **ros_hadoop / RosbagInputFormat**
+
+Large-scale data processing for ROS using Hadoop, Spark, TensorFlow and more.
+
 RosbagInputFormat is an open source **splittable** Hadoop InputFormat for the ROS bag file format.
 
 The complete source code is available in src/ folder and the jar file is generated using SBT (see build.sbt)
@@ -26,6 +29,10 @@ sc.newAPIHadoopFile(
 ```
 
 Example data can be found for instance at https://github.com/udacity/self-driving-car/tree/master/datasets published under MIT License.
+
+# Want to Upgrade?
+
+We also sell ros_spark and ros_go which provide more features, a commercial-friendly license and allow you to support high quality open source development all at the same time.  Please see the [Autovia](https://autovia.ai/robot_operating_system_ros.html) homepage for more detail.
 
 # Documentation
 The [doc/](doc/) folder contains a jupyter notebook with a few basic usage examples.
